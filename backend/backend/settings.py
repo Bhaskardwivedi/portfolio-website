@@ -11,6 +11,17 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os 
+from dotenv import load_dotenv 
+from django.conf import settings
+from django.conf.urls.static import static
+
+load_dotenv()
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY") 
+ZOOM_ACCOUNT_ID = os.getenv("ZOOM_ACCOUNT_ID")
+ZOOM_CLIENT_ID = os.getenv("ZOOM_CLIENT_ID")
+ZOOM_CLIENT_SECRET = os.getenv("ZOOM_CLIENT_SECRET")
+ZOOM_BASE_URL = os.getenv("ZOOM_BASE_URL")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +36,7 @@ SECRET_KEY = 'django-insecure-v7%97)kxqip+$wjyt)cpk(sf!x)g@tcvu_byh5ueh)g(o7-7i@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -39,10 +50,16 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'portfolio.projects',
     'portfolio.blogs', 
-    'portfolio.skills',
+    'portfolio.skills', 
+    'portfolio.contactus', 
+    'portfolio.chatwithus',  
+    'portfolio.services',
+    'portfolio.aboutus',
+    'portfolio.socials',
+    'portfolio.feedback',
     'corsheaders', 
     'rest_framework', 
-    'rest_framework.authtoken',
+    'rest_framework.authtoken', 
 ]
 
 MIDDLEWARE = [
@@ -87,7 +104,6 @@ DATABASES = {
     }
 }
 
-
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
@@ -127,4 +143,22 @@ STATIC_URL = 'static/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField' 
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'bhaskardwivedi544@gmail.com'  # Mailtrap me diya gaya username
+EMAIL_HOST_PASSWORD = 'astterhuzjgizkjo'  # Mailtrap me diya gaya password
+EMAIL_USE_TLS = True
+REST_FRAMEWORK = {
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.JSONParser',
+    ]
+}
+
+
+
