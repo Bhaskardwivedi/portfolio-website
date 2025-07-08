@@ -1,8 +1,14 @@
 from rest_framework import serializers 
-from .models import Skill
+from .models import Skill, SkillCategory
 
-class SkillSerializer(serializers.ModelSerializer): 
-    class Meta: 
+class SkillCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SkillCategory
+        fields = ['id', 'name']  # Only return ID and Name
+
+class SkillSerializer(serializers.ModelSerializer):
+    category = SkillCategorySerializer()  # nested category object
+
+    class Meta:
         model = Skill
-        fields = '__all__'
-        
+        fields = ['id', 'name', 'proficiency', 'experience_years', 'certificate_link', 'icon', 'category']

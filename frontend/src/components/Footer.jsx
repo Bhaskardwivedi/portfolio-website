@@ -83,7 +83,7 @@ const Footer = () => {
             {["Home", "About", "Services", "Skills", "Projects", "Blog", "Contact", "Chat"].map((item) => (
               <a
                 key={item}
-                href={`#${item.toLowerCase()}`}
+                href={`/${item.toLowerCase()}`}
                 className="hover:text-orange-300 transition-all"
               >
                 {item}
