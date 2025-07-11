@@ -30,6 +30,7 @@ urlpatterns = [
     path('api/aboutus/', include('portfolio.aboutus.urls')), 
     path('api/socials/', include('portfolio.socials.urls')), 
     path('api/feedback/', include('portfolio.feedback.urls')),
+    path('api/categories/', include('portfolio.category.urls')),
     
     
 ]

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
-import { CheckCircle } from "lucide-react"; // icon for feature bullet
+import { CheckCircle } from "lucide-react";
 
 const ServiceCard = ({ title, tagline, description, features, image }) => {
   const [showMore, setShowMore] = useState(false);
@@ -20,12 +20,12 @@ const ServiceCard = ({ title, tagline, description, features, image }) => {
       transition={{ duration: 0.5 }}
       className="bg-white/10 backdrop-blur-lg border border-white/10 rounded-3xl p-6 
         flex flex-col transition-all duration-300 group 
-        hover:shadow-2xl hover:shadow-orange-500/30 hover:scale-105"
+        hover:shadow-2xl hover:shadow-orange-500/30 hover:scale-[1.03]"
     >
       <img
         src={image}
         alt={title}
-        className="w-full h-40 object-cover rounded-xl shadow-md mb-4 
+        className="w-full h-48 object-cover rounded-xl shadow-md mb-4 
         group-hover:shadow-orange-400 transition-all duration-300"
       />
 
@@ -79,81 +79,95 @@ const ServiceCard = ({ title, tagline, description, features, image }) => {
 };
 
 const Services = () => {
-  const [services, setServices] = useState([]);
   const [groupedServices, setGroupedServices] = useState({});
+  const [activeTab, setActiveTab] = useState(null);
 
   useEffect(() => {
     axios
       .get("http://192.168.31.164:8000/api/services/")
       .then((res) => {
-        setServices(res.data);
-        const grouped = res.data.reduce((acc, service) => {
-          const category = service.category;
-          if (!acc[category]) acc[category] = [];
-          acc[category].push(service);
+        const servicesData = res.data;
+
+        const grouped = servicesData.reduce((acc, service) => {
+          const cat = service.category;
+          if (cat && cat.type === "service") {
+            const key = cat.slug;
+
+            if (!acc[key]) {
+              acc[key] = {
+                name: cat.name,
+                emoji:
+                  cat.name.toLowerCase().includes("ai") ? "🤖" :
+                  cat.name.toLowerCase().includes("data") ? "🧠" :
+                  cat.name.toLowerCase().includes("business") ? "📊" :
+                  cat.name.toLowerCase().includes("web") ? "🛠️" :
+                  "📦",
+                services: [],
+              };
+            }
+
+            acc[key].services.push(service);
+          }
           return acc;
         }, {});
+
         setGroupedServices(grouped);
+        setActiveTab(Object.keys(grouped)[0]);
       })
       .catch((err) => console.error("Error fetching services:", err));
   }, []);
-
-  const getCategoryLabel = (key) => {
-    const map = {
-      ai_automation: "AI-Powered Automation & Agents",
-      data_platform: "Data Engineering & Intelligence",
-      business_insight: "Business Intelligence & Analytics",
-      web_development_support: "Custom Web Development & Support",
-    };
-    return map[key] || key;
-  };
 
   return (
     <section
       id="services"
       className="relative min-h-screen py-24 px-4 sm:px-8 lg:px-20 bg-gray-900"
     >
-      {/* Blurred Background */}
-      <div
-        className="absolute inset-0 z-0"
-        style={{
-          backgroundImage: `url('/src/assets/service.jpg')`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          filter: "blur(3px)",
-          opacity: 0.3,
-        }}
-      />
+      <div className="absolute inset-0 z-0 bg-[url('/src/assets/service.jpg')] bg-cover bg-center blur-sm opacity-20" />
       <div className="absolute inset-0 bg-black/10 z-10" />
 
-      {/* Content */}
       <div className="relative z-20 max-w-7xl mx-auto">
-        <h2 className="text-4xl sm:text-5xl font-bold text-center text-white mb-16 tracking-wide">
+        <h2 className="text-4xl sm:text-5xl font-bold text-center text-white mb-12">
           My <span className="text-orange-400">Services</span>
         </h2>
 
-        {Object.entries(groupedServices).map(([category, services]) => (
-          <div key={category} className="mb-20">
-            <motion.h3
-              initial={{ opacity: 0, y: -20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="text-2xl font-bold text-center px-8 py-2 mb-8
-                bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 text-white rounded-full
-                border-2 border-orange-400 shadow-lg hover:shadow-orange-500/60 
-                transition-transform duration-500 hover:scale-105 w-fit mx-auto"
+        {/* Tabs */}
+        <div className="flex flex-wrap justify-center gap-3 mb-12">
+          {Object.entries(groupedServices).map(([slug, group]) => (
+            <button
+              key={slug}
+              onClick={() => setActiveTab(slug)}
+              className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-full 
+                border border-orange-400 backdrop-blur-md 
+                transition-all duration-300 
+                ${activeTab === slug ? "bg-orange-500 text-white shadow-lg scale-105" : "bg-white/10 text-orange-300 hover:bg-orange-400/30"}`}
             >
-              <span className="mr-2 text-3xl">
-                {category === "ai_automation" && "🤖"}
-                {category === "data_platform" && "🧠"}
-                {category === "business_insight" && "📊"}
-                {category === "web_development_support" && "🛠️"}
-              </span>
-              {getCategoryLabel(category)}
+              <span>{group.emoji}</span>
+              {group.name}
+            </button>
+          ))}
+        </div>
+
+        {activeTab && (
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            <motion.h3
+              initial={{ opacity: 0, y: -10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="text-xl sm:text-2xl font-bold text-center px-8 py-2 mb-8
+                bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 text-white rounded-full
+                w-fit mx-auto shadow-md"
+            >
+              <span className="mr-2 text-2xl">{groupedServices[activeTab].emoji}</span>
+              {groupedServices[activeTab].name}
             </motion.h3>
 
             <div className="grid gap-10 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-              {services.map((service, index) => (
+              {groupedServices[activeTab].services.map((service, index) => (
                 <ServiceCard
                   key={index}
                   title={service.title}
@@ -164,8 +178,8 @@ const Services = () => {
                 />
               ))}
             </div>
-          </div>
-        ))}
+          </motion.div>
+        )}
       </div>
     </section>
   );

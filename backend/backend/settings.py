@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'portfolio.aboutus',
     'portfolio.socials',
     'portfolio.feedback',
+    'portfolio.category',
     'corsheaders', 
     'rest_framework', 
     'rest_framework.authtoken', 
