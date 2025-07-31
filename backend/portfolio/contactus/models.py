@@ -10,3 +10,12 @@ class contactMessage(models.Model):
     def __str__(self):
         return f"{self.name} - {self.subject}"
     
+class contactinfo(models.Model):
+    description = models.TextField()
+    phone=models.CharField(max_length=200)
+    email=models.EmailField()
+    location=models.CharField(max_length=255)
+    
+    def __str__(self):
+        return "contact info"
+    

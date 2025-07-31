@@ -8,6 +8,10 @@ import footerBg from "../assets/footer.jpg";
 
 const Footer = () => {
   const [socialLinks, setSocialLinks] = useState([]);
+  const [email, setEmail] = useState("");
+  const [subMsg, setSubMsg] = useState("");
+  const [subColor, setSubColor] = useState("text-green-400");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     axios
@@ -15,6 +19,34 @@ const Footer = () => {
       .then((response) => setSocialLinks(response.data))
       .catch((error) => console.error("Error fetching socials:", error));
   }, []);
+
+  const handleSubscribe = async (e) => {
+    e.preventDefault();
+    if (!email || !email.includes("@") || !email.includes(".")) {
+      setSubMsg("⚠️ Please enter a valid email.");
+      setSubColor("text-yellow-400");
+      return;
+    }
+    setLoading(true);
+    try {
+      await axios.post("http://192.168.31.164:8000/api/blogs/subscribe/", { email });
+      setSubMsg("✅ Subscribed successfully!");
+      setSubColor("text-green-400");
+      setEmail("");
+    } catch (err) {
+      const errorMsg = err.response?.data?.email?.[0];
+      if (errorMsg === "subscriber with this email already exists.") {
+        setSubMsg("⚠️ You're already subscribed.");
+      } else if (errorMsg === "Enter a valid email address.") {
+        setSubMsg("⚠️ Please enter a valid email.");
+      } else {
+        setSubMsg("⚠️ Something went wrong. Try again later.");
+      }
+      setSubColor("text-yellow-400");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getIconComponent = (iconName) => {
     return FaIcons[iconName] || Fa6Icons[iconName] || SiIcons[iconName] || FaIcons["FaEnvelope"];
@@ -55,19 +87,24 @@ const Footer = () => {
           </p>
           <div className="mt-4">
             <p className="text-sm mb-2 text-orange-300">Subscribe to my newsletter</p>
-            <form className="flex flex-col sm:flex-row gap-2">
+            <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-2">
               <input
                 type="email"
                 placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
                 className="px-4 py-2 rounded bg-white/10 border border-gray-500 text-white placeholder:text-gray-400 focus:outline-none"
               />
               <button
                 type="submit"
-                className="px-4 py-2 rounded bg-orange-500 hover:bg-orange-600 transition-colors"
+                className="px-4 py-2 rounded bg-orange-500 hover:bg-orange-600 transition-colors disabled:opacity-60"
+                disabled={loading}
               >
-                Subscribe
+                {loading ? "Submitting..." : "Subscribe"}
               </button>
             </form>
+            {subMsg && <p className={`text-sm mt-2 ${subColor}`}>{subMsg}</p>}
           </div>
         </motion.div>
 

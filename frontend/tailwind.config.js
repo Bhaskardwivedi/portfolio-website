@@ -31,6 +31,7 @@ export default {
     },
   },
   plugins: [
-    require('tailwind-scrollbar')({ nocompatible: true }), // required for v3 compatibility
+    require('tailwind-scrollbar')({ nocompatible: true }),
+    require('@tailwindcss/forms')
   ],
 };

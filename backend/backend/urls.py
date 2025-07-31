@@ -18,6 +18,8 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from portfolio.blogs.views import get_csrf_token
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -31,6 +33,7 @@ urlpatterns = [
     path('api/socials/', include('portfolio.socials.urls')), 
     path('api/feedback/', include('portfolio.feedback.urls')),
     path('api/categories/', include('portfolio.category.urls')),
+    path('api/get-csrf/', get_csrf_token),
     
     
 ]
